@@ -1,0 +1,21 @@
+{
+  "_comment": "Pi-Star Nexus Proxy — DNS discovery mode. Only callsign, radio ID, and passphrase needed.",
+  "local": {
+    "address": "127.0.0.1",
+    "port": 62031,
+    "passphrase": "passw0rd",
+    "repeater_id": 0
+  },
+  "cluster": {
+    "discovery": "nexus.techsnet.net",
+    "passphrase": "",
+    "ping_interval": 5,
+    "ping_timeout": 3,
+    "discovery_interval": 30
+  },
+  "subscription": {
+    "slot1": null,
+    "slot2": null
+  },
+  "log_level": "info"
+}

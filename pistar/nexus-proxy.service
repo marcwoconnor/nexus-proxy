@@ -1,0 +1,27 @@
+[Unit]
+Description=DMR Nexus Cluster Proxy
+Documentation=https://github.com/marcwoconnor/dmr-nexus
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/nexus-proxy /etc/nexus-proxy.json
+Restart=always
+RestartSec=5
+User=mmdvm
+Group=mmdvm
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nexus-proxy
+
+# Hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadOnlyPaths=/etc/nexus-proxy.json
+
+[Install]
+WantedBy=multi-user.target

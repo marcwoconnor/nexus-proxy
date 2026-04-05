@@ -1,0 +1,33 @@
+{
+  "_comment": "cluster-proxy config — choose ONE of: discovery mode OR manual servers",
+
+  "local": {
+    "address": "0.0.0.0",
+    "port": 62031,
+    "passphrase": "local-repeater-passphrase",
+    "repeater_id": 312100
+  },
+
+  "cluster": {
+    "_mode_1_discovery": "Set 'discovery' for DNS SRV auto-discovery (Pi-Star recommended)",
+    "discovery": "nexus.techsnet.net",
+    "discovery_interval": 30,
+
+    "_mode_2_manual": "Or set 'servers' for static server list (mutually exclusive with discovery)",
+    "_servers": [
+      {"address": "10.31.11.40", "port": 62031},
+      {"address": "10.31.11.41", "port": 62031}
+    ],
+
+    "passphrase": "cluster-server-passphrase",
+    "ping_interval": 5,
+    "ping_timeout": 3
+  },
+
+  "subscription": {
+    "slot1": [8, 9, 3120, 3121],
+    "slot2": [3100, 3110, 3120, 9998]
+  },
+
+  "log_level": "info"
+}
