@@ -31,7 +31,9 @@ The installer will:
 2. Download the correct binary (~2.4MB)
 3. Ask for your **callsign**, **DMR radio ID**, and **network passphrase**
 4. Configure DMRGateway to route through the proxy
-5. Start the service
+5. Apply the **Nexus dark theme** to your Pi-Star dashboard
+6. Install a **Nexus configuration page** in the Pi-Star admin menu
+7. Start the service
 
 That's it. Three questions and you're on the air with full cluster awareness.
 
@@ -76,6 +78,44 @@ Three-tier failover, from best to worst:
 **Proactive failover:** When a server starts draining (graceful shutdown), it tells the proxy immediately via topology push. The proxy switches before the server goes down — zero interruption.
 
 **Missed-ping failover:** If a server stops responding to pings (crash, network partition), the proxy detects it within 15 seconds (3 missed pings x 5 second interval) and fails over.
+
+## Pi-Star Dashboard Integration
+
+The installer also modernizes your Pi-Star web dashboard with a dark theme and adds a dedicated Nexus management page.
+
+### Dark Theme
+
+A dark color scheme matching the DMR Nexus server dashboard is applied to all Pi-Star pages:
+
+- Dark backgrounds (`#0f172a` page, `#1e293b` cards) with sky-blue accents
+- Styled tables with hover effects and rounded corners
+- Dark form inputs with blue focus glow
+- Terminal-style log viewer
+- Responsive layout for mobile
+- All existing Pi-Star functionality preserved — purely visual changes
+
+The theme is injected via a single CSS file (`nexus-theme.css`). No PHP logic is modified.
+
+### Nexus Configuration Page
+
+A configuration page is installed at `/admin/configure_nexus.php` and linked in the admin navigation menu. From this page you can:
+
+- **Edit settings** — radio ID, network passphrase, discovery domain, log level
+- **Control the service** — start, stop, restart buttons
+- **View logs** — last 15 lines from the journal, updated on page load
+- **Check status** — running/stopped indicator
+
+Changes are applied immediately — the page saves the config and restarts the proxy service.
+
+### Uninstall Cleans Up
+
+The uninstall script (`uninstall.sh`) reverses all dashboard changes:
+- Removes `nexus-theme.css` and all CSS link injections from PHP files
+- Removes the Nexus config page
+- Removes the admin menu link
+- Restores DMRGateway to its pre-Nexus configuration
+
+Your Pi-Star dashboard returns to its stock appearance.
 
 ## Manual Install
 
