@@ -10,8 +10,7 @@
 set -euo pipefail
 
 NEXUS_VERSION="1.0.0"
-BINARY_URL="https://github.com/marcwoconnor/dmr-nexus/releases/download/proxy-v${NEXUS_VERSION}/nexus-proxy-linux-arm"
-INSTALL_URL="https://nexus.techsnet.net/install.sh"
+BINARY_URL="https://github.com/marcwoconnor/nexus-proxy/releases/download/v${NEXUS_VERSION}/nexus-proxy-linux-arm"
 CONFIG_PATH="/etc/nexus-proxy.json"
 SERVICE_PATH="/etc/systemd/system/nexus-proxy.service"
 BINARY_PATH="/usr/local/bin/nexus-proxy"
@@ -43,7 +42,7 @@ case $ARCH in
     armv6l)  BINARY_URL="${BINARY_URL}v6" ;;
     armv7l)  BINARY_URL="${BINARY_URL}v7" ;;
     aarch64) BINARY_URL="${BINARY_URL}64" ;;
-    x86_64)  BINARY_URL="https://github.com/marcwoconnor/dmr-nexus/releases/download/proxy-v${NEXUS_VERSION}/nexus-proxy-linux-amd64" ;;
+    x86_64)  BINARY_URL="https://github.com/marcwoconnor/nexus-proxy/releases/download/v${NEXUS_VERSION}/nexus-proxy-linux-amd64" ;;
     *)
         echo -e "${RED}Unsupported architecture: $ARCH${NC}"
         exit 1
