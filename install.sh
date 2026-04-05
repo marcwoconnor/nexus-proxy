@@ -15,9 +15,6 @@ CONFIG_PATH="/etc/nexus-proxy.json"
 SERVICE_PATH="/etc/systemd/system/nexus-proxy.service"
 BINARY_PATH="/usr/local/bin/nexus-proxy"
 DMRGW_CONFIG="/etc/dmrgateway"
-PISTAR_DASH="/var/www/dashboard"
-THEME_URL="https://raw.githubusercontent.com/marcwoconnor/Pi-Star_DV_Dash/nexus-theme/css/nexus-theme.css"
-CONFIG_PAGE_URL="https://raw.githubusercontent.com/marcwoconnor/nexus-proxy/main/pistar/configure_nexus.php"
 
 # Colors
 RED='\033[0;31m'
@@ -45,7 +42,7 @@ case $ARCH in
     armv6l)  BINARY_URL="${BINARY_URL}v6" ;;
     armv7l)  BINARY_URL="${BINARY_URL}v7" ;;
     aarch64) BINARY_URL="${BINARY_URL}64" ;;
-    x86_64)  BINARY_URL="https://github.com/marcwoconnor/nexus-proxy/releases/download/v${NEXUS_VERSION}/nexus-proxy-linux-amd64" ;;
+    x86_64)  BINARY_URL="https://github.com/marcwoconnor/dmr-nexus/releases/download/proxy-v${NEXUS_VERSION}/nexus-proxy-linux-amd64" ;;
     *)
         echo -e "${RED}Unsupported architecture: $ARCH${NC}"
         exit 1
@@ -84,7 +81,8 @@ fi
 if [[ "${SKIP_CONFIG:-}" != "true" ]]; then
     read -p "Your callsign: " CALLSIGN
     read -p "Your DMR Radio ID: " RADIO_ID
-    read -p "Network passphrase (from DMR Nexus admin): " PASSPHRASE
+    echo -e "${CYAN}Register at: https://nexus.techsnet.net:8080/register${NC}"
+    read -p "Your connection password: " PASSPHRASE
 
     # Validate radio ID is numeric
     if ! [[ "$RADIO_ID" =~ ^[0-9]+$ ]]; then
@@ -202,67 +200,6 @@ if [[ -f "$DMRGW_CONFIG" ]]; then
     fi
 
     echo -e "${GREEN}Backup saved: ${DMRGW_CONFIG}.pre-nexus.bak${NC}"
-fi
-
-# Install Pi-Star dashboard integration (dark theme + Nexus config page)
-if [[ -d "$PISTAR_DASH" ]]; then
-    echo ""
-    echo -e "${CYAN}Installing Pi-Star dashboard integration...${NC}"
-
-    # Download dark theme CSS
-    if [[ -d "$PISTAR_DASH/css" ]]; then
-        curl -sL -o "$PISTAR_DASH/css/nexus-theme.css" "$THEME_URL" 2>/dev/null
-        if [[ -s "$PISTAR_DASH/css/nexus-theme.css" ]]; then
-            echo -e "${GREEN}Dark theme installed: $PISTAR_DASH/css/nexus-theme.css${NC}"
-        else
-            echo -e "${YELLOW}Could not download dark theme (non-critical)${NC}"
-        fi
-    fi
-
-    # Inject theme CSS link into main pages if not already present
-    THEME_LINK='<link rel="stylesheet" type="text/css" href="/css/nexus-theme.css" />'
-    for phpfile in "$PISTAR_DASH/index.php" "$PISTAR_DASH/admin/configure.php" \
-                   "$PISTAR_DASH/admin/sysinfo.php" "$PISTAR_DASH/admin/power.php" \
-                   "$PISTAR_DASH/admin/update.php" "$PISTAR_DASH/admin/live_modem_log.php"; do
-        if [[ -f "$phpfile" ]] && ! grep -q "nexus-theme.css" "$phpfile"; then
-            # Insert theme link after the last existing CSS link
-            sed -i "/<\/head>/i\\    $THEME_LINK" "$phpfile"
-        fi
-    done
-
-    # Inject into expert editor pages (different relative path)
-    THEME_LINK_EXPERT='<link rel="stylesheet" type="text/css" href="../css/nexus-theme.css" />'
-    for phpfile in "$PISTAR_DASH"/admin/expert/*.php; do
-        if [[ -f "$phpfile" ]] && ! grep -q "nexus-theme.css" "$phpfile"; then
-            sed -i "/<\/head>/i\\    $THEME_LINK_EXPERT" "$phpfile"
-        fi
-    done
-    echo -e "${GREEN}Theme applied to Pi-Star dashboard pages${NC}"
-
-    # Download Nexus config page
-    if [[ -d "$PISTAR_DASH/admin" ]]; then
-        curl -sL -o "$PISTAR_DASH/admin/configure_nexus.php" "$CONFIG_PAGE_URL" 2>/dev/null
-        if [[ -s "$PISTAR_DASH/admin/configure_nexus.php" ]]; then
-            chown www-data:www-data "$PISTAR_DASH/admin/configure_nexus.php" 2>/dev/null || true
-            echo -e "${GREEN}Nexus config page installed: /admin/configure_nexus.php${NC}"
-        else
-            echo -e "${YELLOW}Could not download config page (non-critical)${NC}"
-        fi
-    fi
-
-    # Add Nexus link to Pi-Star admin menu if not already present
-    MENU_FILE="$PISTAR_DASH/admin/expert/header-menu.inc"
-    if [[ -f "$MENU_FILE" ]] && ! grep -q "configure_nexus" "$MENU_FILE"; then
-        # Insert a Nexus menu item before the closing </ul> or </nav>
-        sed -i '/<\/ul>/i\            <li><a href="/admin/configure_nexus.php">DMR Nexus</a></li>' "$MENU_FILE" 2>/dev/null
-        if [[ $? -eq 0 ]]; then
-            echo -e "${GREEN}Added 'DMR Nexus' to admin navigation menu${NC}"
-        fi
-    fi
-
-    echo -e "${GREEN}Dashboard integration complete${NC}"
-else
-    echo -e "${YELLOW}Pi-Star dashboard not found at $PISTAR_DASH — skipping UI install${NC}"
 fi
 
 # Start services

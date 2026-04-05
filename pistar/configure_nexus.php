@@ -196,7 +196,7 @@ if ($installed) {
     <input type="password" name="passphrase" id="passphrase"
            value="<?php echo htmlspecialchars($config['passphrase']); ?>"
            placeholder="From your DMR Nexus admin" required />
-    <div class="help-text">Provided by your DMR Nexus network administrator</div>
+    <div class="help-text">Your personal connection password — <a href="https://nexus.techsnet.net:8080/register" target="_blank" style="color:#0ea5e9">register for an account</a></div>
 
     <label for="discovery">Discovery Domain</label>
     <input type="text" name="discovery" id="discovery"
