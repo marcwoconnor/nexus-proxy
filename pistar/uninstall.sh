@@ -38,6 +38,27 @@ if [[ -f "${DMRGW_CONFIG}.pre-nexus.bak" ]]; then
     fi
 fi
 
+# Remove dashboard integration
+PISTAR_DASH="/var/www/dashboard"
+if [[ -d "$PISTAR_DASH" ]]; then
+    echo -e "${CYAN}Removing dashboard integration...${NC}"
+    rm -f "$PISTAR_DASH/css/nexus-theme.css"
+    rm -f "$PISTAR_DASH/admin/configure_nexus.php"
+
+    # Remove theme CSS links from PHP files
+    find "$PISTAR_DASH" -name "*.php" -exec grep -l "nexus-theme.css" {} \; 2>/dev/null | while read f; do
+        sed -i '/nexus-theme\.css/d' "$f"
+    done
+
+    # Remove Nexus menu item
+    MENU_FILE="$PISTAR_DASH/admin/expert/header-menu.inc"
+    if [[ -f "$MENU_FILE" ]]; then
+        sed -i '/configure_nexus/d' "$MENU_FILE"
+    fi
+
+    echo -e "${GREEN}Dashboard restored to stock${NC}"
+fi
+
 # Optionally remove config
 read -p "Remove config (/etc/nexus-proxy.json)? [y/N] " -n 1 -r
 echo
